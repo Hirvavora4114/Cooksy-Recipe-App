@@ -5,14 +5,14 @@
  */
 
 "use strict";
-
+console.log("HOME JS LOADED");
 
 /** 
  * Import
  */
 
 import { fetchData } from "./api.js";
-import { $skeletonCard, cardQueries } from "./global.js";
+import { $skeletonCard, cardQueries, addEventOnElements } from "./global.js";
 
 /**
  * Home page Search
@@ -107,52 +107,27 @@ const addTabContent = ($currentTabBtn, $currentTabPanel) => {
   fetchData([['mealType', $currentTabBtn.textContent.trim().toLowerCase()], ...cardQueries], function (data) {
 
     $currentTabPanel.innerHTML = "";
-
-    for (let i = 0; i < Math.min(12, data.hits.length); i++) {
+    
+for (let i = 0; i < Math.min(12, data.hits.length); i++) {
 
       const {
-       recipe: {
-       image,
-       label: title,
-       totalTime: cookingTime,
-       uri
-    }
-  } = data.hits[i];
+        image,
+        label: title,
+        totalTime: cookingTime,
+        uri
+      } = data.hits[i].recipe;
 
-  const $card = document.createElement("div");
-  $card.classList.add("card");
-  $card.style.animationDelay = `${100 * i}ms`;
+      const imgSrc = image || "assets/images/placeholder.jpg";
 
-  // IMAGE
-  const $img = document.createElement("img");
-  $img.src = image;
-  $img.alt = title;
-  $img.loading = "lazy";
-
-  // fallback if image fails
-  $img.onerror = () => {
-    $img.src = "assets/images/placeholder-food.png";
-  };
-
-  // TITLE
-  const $title = document.createElement("h3");
-  $title.textContent = title;
-
-  // TIME
-  const $time = document.createElement("p");
-  $time.textContent = cookingTime ? `${cookingTime} mins` : "Quick recipe";
-
-  // APPEND
-  $card.append($img, $title, $time);
-  recipesContainer.appendChild($card);
-}
+      const /** {NodeElement} */ $card = document.createElement("div");
+      $card.classList.add("card");
+      $card.style.animationDelay = `${100 * i}ms`;
 
 
       $card.innerHTML = `
         <figure class="card-media img-holder">
-          <img src="${image}" width="195" height="195" loading="lazy" alt= "${title}" 
-           class="img-cover">
-        </figure>
+         <img src="${image}" width="195" height="195" loading="lazy" alt="${title}" class="img-cover">
+       </figure>
 
         <div class="card-body">
 
@@ -193,4 +168,6 @@ const addTabContent = ($currentTabBtn, $currentTabPanel) => {
 
 }
 
+$lastActiveTabPanel.removeAttribute("hidden");
+$lastActiveTabBtn.setAttribute("aria-selected", "true");
 addTabContent($lastActiveTabBtn, $lastActiveTabPanel);

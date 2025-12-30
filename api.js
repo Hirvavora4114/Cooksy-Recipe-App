@@ -1,38 +1,35 @@
-/**
- * @license MIT
- * @copyright 2023 codewithsadee
- * @author codewithsadee <mohammadsadee24@gmail.com>
- */
-
 "use strict";
 
-
 window.ACCESS_POINT = "https://api.edamam.com/api/recipes/v2";
-const /** {String} */ APP_ID = "2799d74a";
-const /** {String} */ API_KEY = "24da4a346373b1f0e210ad1893a61dcb";
-const /** {String} */ TYPE = "public";
+const APP_ID = "7f95e777";
+const API_KEY = "91cde3ab18b956f09ed5b395b49b4099";
+const TYPE = "public";
 
-/**
- * @param {Array} queries Query array
- * @param {Function} successCallback Success callback function
- */
+export const fetchData = async function (queries, successCallback) {
+  const query = queries
+    ?.map(q => q.join("="))
+    .join("&");
 
-export const fetchData = async function (queries,successCallback) {
-    const /** {String} */ query = queries?.join("&")
-      .replace(/,/g, "=")
-      .replace(/ /g, "%20")
-      .replace(/\+/g,"%2B");
-    
-    const /** {String} */ url = `${ACCESS_POINT}?app_id=${APP_ID}&app_key=${API_KEY}&type=${TYPE}${query ? `&${query}` : ""}`;
+  const url = `${ACCESS_POINT}?type=${TYPE}&app_id=${APP_ID}&app_key=${API_KEY}${query ? `&${query}` : ""}`;
 
-    const /** {Object} */ response = await fetch(url);
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "Edamam-Account-User": "hirva-vora"
+      }
+    });
 
-    if (response.ok) {
-        const data = await response.json();
-        successCallback(data);
+    if (!response.ok) {
+      console.error("Edamam API error:", response.status);
+      return;
     }
 
-}
-    
+    const data = await response.json();
+    successCallback(data);
+
+  } catch (error) {
+    console.error("Fetch failed:", error);
+  }
+};
 
 
